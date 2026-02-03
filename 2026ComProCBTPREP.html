@@ -1,0 +1,682 @@
+<!<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CBT Mock Test 50 Questions</title>
+<script src="https://js.paystack.co/v1/inline.js"></script>
+<style>
+body { font-family: Arial, sans-serif; background: #f0f0f0; padding: 20px; }
+.box { background: #fff; padding: 30px; border-radius: 10px; box-shadow: 0 0 10px #aaa; max-width: 700px; margin: auto; text-align: center; }
+h1,h2 { color: #1976d2; text-transform: uppercase; }
+p { font-size: 16px; margin: 20px 0; text-transform: uppercase; }
+input { padding: 10px; width: 80%; margin: 10px 0; border-radius: 5px; border: 1px solid #ccc; }
+button { padding: 10px 20px; font-size: 16px; border-radius: 5px; border: none; background: #1976d2; color: #fff; cursor: pointer; text-transform: uppercase; margin:5px; }
+</style>
+</head>
+<body>
+
+<!-- WELCOME SCREEN -->
+<div class="box" id="welcomeBox">
+  <h1>WELCOME!</h1>
+  <p>
+    DEAR STAFF, YOU ARE ABOUT TO TAKE A PRACTICE CONFIRMATION EXAM.  
+    NOTE: THE QUESTIONS YOU WILL ATTEMPT ARE NOT THE REAL EXAM QUESTIONS, BUT THEY ARE DESIGNED TO BUILD YOUR CONFIDENCE AND HELP YOU PRACTICE WITH QUALITY QUESTIONS RELATED TO THE ACTUAL EXAM.
+  </p>
+  <button id="continueBtn">CONTINUE</button>
+</div>
+
+<!-- REGISTRATION & LOGIN -->
+<div class="box" id="authBox" style="display:none;">
+  <h1>REGISTRATION / LOGIN</h1>
+  <input type="text" id="username" placeholder="ENTER USERNAME"><br>
+  <input type="password" id="password" placeholder="ENTER PASSWORD"><br>
+  <button id="registerBtn">REGISTER</button>
+  <button id="loginBtn">LOGIN</button>
+  <button id="logoutBtn" style="display:none;">LOGOUT</button>
+  <p id="authMessage" style="color:red; display:none;"></p>
+</div>
+
+<!-- QUIZ CONTAINER -->
+<div id="quizContainer" class="box" style="display:none;"></div>
+
+<script>
+// ===== CONTINUE BUTTON =====
+document.getElementById('continueBtn').onclick = () => {
+    document.getElementById('welcomeBox').style.display='none';
+    document.getElementById('authBox').style.display='block';
+};
+
+// ===== USERS STORAGE =====
+let users = JSON.parse(localStorage.getItem('users') || "[]");
+let currentUser = null;
+
+// ===== AUTH =====
+document.getElementById('registerBtn').onclick = () => {
+    const username = document.getElementById('username').value.trim();
+    const password = document.getElementById('password').value.trim();
+    if(!username || !password) return alert("ENTER USERNAME AND PASSWORD");
+    if(users.find(u=>u.username===username)){
+        showMessage("Username already taken");
+        return;
+    }
+    users.push({username,password});
+    localStorage.setItem('users', JSON.stringify(users));
+    showMessage("Registration successful! Please login.", "green");
+};
+
+document.getElementById('loginBtn').onclick = () => {
+    const username = document.getElementById('username').value.trim();
+    const password = document.getElementById('password').value.trim();
+    const user = users.find(u=>u.username===username && u.password===password);
+    if(user){
+        currentUser=user;
+        document.getElementById('authBox').style.display='none';
+        document.getElementById('quizContainer').style.display='block';
+        document.getElementById('logoutBtn').style.display='inline-block';
+        renderQuestion(0);
+    } else showMessage("Invalid username or password");
+};
+
+document.getElementById('logoutBtn').onclick = () => {
+    currentUser=null;
+    document.getElementById('quizContainer').style.display='none';
+    document.getElementById('authBox').style.display='block';
+    document.getElementById('logoutBtn').style.display='none';
+};
+
+// ===== MESSAGE =====
+function showMessage(msg,color="red"){
+    const p = document.getElementById('authMessage');
+    p.style.color=color;
+    p.innerText=msg;
+    p.style.display='block';
+    setTimeout(()=>p.style.display='none',3000);
+}
+
+// ===== QUIZ DATA (first 50 questions) =====
+const questions=[
+{q:"The principal purpose of the Public Service Rules is to:",options:["Regulate conduct of civil servants","Manage elections","Control private business","Run banks"],answer:0},
+{q:"Which of the following is a core value of the public service?",options:["Merit","Friendship","Bribery","Favoritism"],answer:0},
+{q:"Public officers must discharge their duties with:",options:["Integrity","Laziness","Bias","Negligence"],answer:0},
+{q:"One of the grounds for disciplinary action under PSR is:",options:["Misconduct","Punctuality","Hard work","Good performance"],answer:0},
+{q:"Probationary officers in the civil service are usually confirmed after how many years?",options:["1","2","3","4"],answer:0},
+{q:"A permanent secretary in a ministry is responsible to the:",options:["Minister","President","Governor","National Assembly"],answer:0},
+{q:"Civil service recruitment should be based on:",options:["Merit","Seniority only","Status","Politics"],answer:0},
+{q:"The Public Service Rules apply to:",options:["Public servants","Private sector workers","Judges only","Legislators"],answer:0},
+{q:"Which organization oversees civil service appointments in Nigeria?",options:["Federal Civil Service Commission","Central Bank of Nigeria","National Assembly","Supreme Court"],answer:0},
+{q:"Unauthorized absence from duty is considered:",options:["Misconduct","Merit","Promotion","Training"],answer:0},
+// 10th question
+{q:"Common law is law developed by:",options:["Judicial decisions","National Assembly","Executive orders","International bodies"],answer:0},
+{q:"Under common law, 'stare decisis' means:",options:["Follow precedent","Ignore old cases","Create new statutes","Refer to legislature"],answer:0},
+{q:"A tort is best defined as:",options:["A civil wrong","A crime","A statute","A regulation"],answer:0},
+{q:"In common law, a binding decision is called a:",options:["Precedent","Decree","Statute","Directive"],answer:0},
+{q:"Which of the following is a source of common law?",options:["Judicial decisions","Legislation only","Executive order","Civil Service Rules"],answer:0},
+{q:"The doctrine of precedent ensures:",options:["Consistency in law","Random decisions","Trial by jury","Executive power"],answer:0},
+{q:"Negligence is a type of:",options:["Tort","Contract","Statute","Regulation"],answer:0},
+{q:"Common law originated from:",options:["England","France","Germany","USA"],answer:0},
+{q:"A binding judgment must be followed by:",options:["Lower courts","International courts","Legislators","Police"],answer:0},
+{q:"A contract is formed when an offer is:",options:["Accepted","Rejected","Ignored","Delayed"],answer:0},
+{q:"Financial Regulations primarily govern:",options:["Public financial management","Trade licenses","Civil service discipline","Private business"],answer:0},
+{q:"The main objective of financial regulation is to ensure:",options:["Transparency","Secrecy","Confusion","Favoritism"],answer:0},
+{q:"Appropriation of public funds must follow:",options:["Financial Regulations","Common Law only","PSR only","Criminal law"],answer:0},
+{q:"A key principle of financial regulation is:",options:["Accountability","Arbitrariness","Secrecy","Favoritism"],answer:0},
+{q:"Government budgets in Nigeria are approved by:",options:["National Assembly","Executive only","Judiciary","Civil servants"],answer:0},
+{q:"Auditing of public accounts is carried out by the:",options:["Auditor-General","CBN","Ministry of Finance","Supreme Court"],answer:0},
+{q:"Misuse of public funds is a violation of:",options:["Financial Regulations","Common law","Customary law","Civil Service Rules only"],answer:0},
+{q:"Financial regulations ensure that funds are used for:",options:["Authorized purposes","Personal use","Political campaigns","Vendor payments"],answer:0},
+{q:"Which of the following is a public asset?",options:["Government building","Private car","Personal savings","Local business"],answer:0},
+{q:"Reconciliation of public accounts helps to ensure:",options:["Accuracy","Delay","Errors","Corruption"],answer:0},
+{q:"Nigeria gained independence in:",options:["1960","1970","1950","1980"],answer:0},
+{q:"The capital of Nigeria is:",options:["Abuja","Lagos","Kano","Port Harcourt"],answer:0},
+{q:"The currency of Nigeria is called the:",options:["Naira","Dollar","Pound","Euro"],answer:0},
+{q:"The largest state in Nigeria by land area is:",options:["Niger","Lagos","Kano","Oyo"],answer:0},
+{q:"The seat of the Federal Capital Territory is:",options:["Abuja","Kaduna","Jos","Benin"],answer:0},
+{q:"Nigeria operates a federal system of government. True or False?",options:["True","False","Maybe","Not sure"],answer:0},
+{q:"The National Assembly of Nigeria consists of:",options:["Senate and House of Representatives","Only Senate","Only House","Supreme Court"],answer:0},
+{q:"The official language of Nigeria is:",options:["English","Hausa","Yoruba","Igbo"],answer:0},
+{q:"The motto of Nigeria is:",options:["Unity and Faith, Peace and Progress","Freedom and Justice","Unity and Strength","Peace for All"],answer:0},
+{q:"The National Anthem of Nigeria has how many stanzas?",options:["2","1","3","4"],answer:0},
+{q:"The Federal Civil Service Commission is responsible for:",options:["Recruitment and confirmation of staff","Judging courts","Writing laws","Running banks"],answer:0},
+{q:"FCT stands for:",options:["Federal Capital Territory","Federal Civil Tribunal","Financial Control Team","Foreign Civil Trust"],answer:0},
+{q:"The head of the Federal Civil Service in Nigeria is appointed by the:",options:["President","National Assembly","Governor","Chief Justice"],answer:0},
+{q:"The minimum qualification for most civil service entry levels is usually:",options:["SSCE/WAEC","PhD","Primary School","No qualification"],answer:0},
+{q:"Civil servants must uphold the values of:",options:["Professionalism","Bias","Corruption","Negligence"],answer:0},
+{q:"Which of these is a responsibility of the Civil Service Commission?",options:["Disciplinary matters","Refereeing football","Managing banks","Foreign policy"],answer:0},
+{q:"The FCT Civil Service Commission helps ensure:",options:["Fair appointments","Banking policies","Private contracts","Elections"],answer:0},
+{q:"The Nigerian Civil Service Code emphasizes:",options:["Impartiality","Partiality","Bias","Nepotism"],answer:0},
+{q:"Public officers must avoid:",options:["Conflict of interest","Hard work","Loyalty","Efficiency"],answer:0},
+{q:"Continuous training in the civil service is to promote:",options:["Competence","Favoritism","Delay","Negligence"],answer:0},
+{q:"A legal contract must have:",options:["Offer, acceptance, consideration, legal purpose","Bribery","Force","No witnesses"],answer:0},
+{q:"In common law, an act of parliament is called a:",options:["Statute","Tort","Equity","Precedent"],answer:0},
+{q:"The burden of proof in civil cases usually lies with the:",options:["Plaintiff","Defendant","Judge","Jury"],answer:0},
+{q:"In contract law, 'consideration' means:",options:["Something of value exchanged","Nothing exchanged","Only money","Only goods"],answer:0},
+{q:"Public servants are expected to demonstrate:",options:["Honesty","Corruption","Bias","Favoritism"],answer:0},
+{q:"Promotion in the civil service is based mainly on:",options:["Merit and performance","Family background","Religion","Friendship"],answer:0},
+{q:"Civil servants must be politically:",options:["Neutral","Active in party campaigns","Biased","Independent candidates"],answer:0},
+{q:"A civil servant must report corruption to:",options:["Appropriate authority","Friends","Media immediately","Ignore it"],answer:0},
+{q:"Retirement age for most Nigerian civil servants is:",options:["60 years","70 years","65 years","75 years"],answer:0},
+{q:"Compulsory retirement may also occur after:",options:["35 years of service","10 years","20 years","50 years"],answer:0},
+{q:"Absence without permission is treated as:",options:["Serious misconduct","Promotion","Reward","Transfer"],answer:0},
+{q:"Civil servants must avoid receiving:",options:["Unauthorized gifts","Salary","Allowances","Bonuses"],answer:0},
+{q:"Confidential information in public service must be:",options:["Protected","Shared publicly","Sold","Posted online"],answer:0},
+{q:"Official documents must be handled with:",options:["Care and confidentiality","Negligence","Carelessness","Delay"],answer:0},
+{q:"Equity developed to:",options:["Correct harshness of common law","Replace statutes","Punish criminals","Create constitution"],answer:0},
+{q:"A civil wrong leading to damages is called:",options:["Tort","Crime","Felony","Statute"],answer:0},
+{q:"Defamation protects a person’s:",options:["Reputation","Property","Income","Health"],answer:0},
+{q:"Trespass involves:",options:["Unlawful entry","Contract agreement","Payment issue","Loan agreement"],answer:0},
+{q:"A valid contract must include:",options:["Offer and acceptance","Threats","Fraud","Force"],answer:0},
+{q:"Negligence requires proof of:",options:["Duty of care","Religion","Status","Rank"],answer:0},
+{q:"Damages in civil cases are usually:",options:["Monetary compensation","Prison sentence","Execution","Community service"],answer:0},
+{q:"A witness gives evidence in:",options:["Court","Police station only","Bank","School"],answer:0},
+{q:"The Supreme Court is the:",options:["Highest court","Lowest court","Military court","Traditional court"],answer:0},
+{q:"Judicial precedent means:",options:["Following previous decisions","Ignoring case law","Creating new constitution","Passing statutes"],answer:0},
+{q:"Public funds must be spent according to:",options:["Approved budget","Personal interest","Verbal approval","Political instruction"],answer:0},
+{q:"Government expenditure must be:",options:["Authorized","Hidden","Secret","Random"],answer:0},
+{q:"Revenue collected by government must be paid into:",options:["Government treasury","Personal account","Private bank","Cash office"],answer:0},
+{q:"The officer responsible for accounting is called:",options:["Accounting officer","Judicial officer","Medical officer","Police officer"],answer:0},
+{q:"Fraud in public finance leads to:",options:["Disciplinary action","Promotion","Reward","Transfer"],answer:0},
+{q:"Audit ensures:",options:["Financial accuracy","Political balance","Staff promotion","Training"],answer:0},
+{q:"Payment vouchers are used to:",options:["Authorize payments","Record attendance","Approve leave","Prepare salary"],answer:0},
+{q:"Budget implementation is supervised by:",options:["Ministry of Finance","Police","Courts","Army"],answer:0},
+{q:"Unauthorized expenditure is called:",options:["Irregular expenditure","Approved expenditure","Budgeted expenditure","Legal expenditure"],answer:0},
+{q:"Financial accountability means:",options:["Responsibility for funds","Ignoring rules","Personal spending","Political spending"],answer:0},
+{q:"Nigeria operates which type of legislature?",options:["Bicameral","Unicameral","Military","Traditional"],answer:0},
+{q:"The Senate President presides over:",options:["Senate","House of Representatives","Judiciary","Executive"],answer:0},
+{q:"The head of government in Nigeria is:",options:["President","Chief Justice","Governor","Minister"],answer:0},
+{q:"Nigeria has how many geopolitical zones?",options:["6","4","5","7"],answer:0},
+{q:"The National Youth Service Corps (NYSC) lasts for:",options:["1 year","6 months","2 years","3 years"],answer:0},
+{q:"FCTA stands for:",options:["Federal Capital Territory Administration","Federal Civil Training Agency","Finance Control Territory Authority","Federal Court Training Agency"],answer:0},
+{q:"The Nigerian coat of arms contains:",options:["Two horses","Two lions","Two elephants","Two tigers"],answer:0},
+{q:"Democracy means:",options:["Government by the people","Military rule","Traditional rule","Colonial rule"],answer:0},
+{q:"Nigeria returned to democratic rule in:",options:["1999","1983","2007","2015"],answer:0},
+{q:"The Nigerian flag colors represent:",options:["Agriculture and peace","War and power","Trade and money","Unity and strength"],answer:0},
+{q:"Civil servants must show loyalty to:",options:["Government of the day","Political parties","Private companies","Foreign agencies"],answer:0},
+{q:"Public Service Rules are designed to promote:",options:["Efficiency and discipline","Corruption","Favoritism","Political bias"],answer:0},
+{q:"Failure to obey lawful order is:",options:["Misconduct","Promotion","Reward","Transfer"],answer:0},
+{q:"Civil servants must declare their assets to:",options:["Appropriate authority","Friends","Bank manager","Union"],answer:0},
+{q:"Receiving bribe is classified as:",options:["Serious misconduct","Promotion requirement","Administrative duty","Routine action"],answer:0},
+
+{q:"Financial regulations guide:",options:["Government expenditure","Private spending","Political campaigns","Election process"],answer:0},
+{q:"Public money must be safeguarded by:",options:["Accounting officers","Security guards","Drivers","Clerks"],answer:0},
+{q:"Government revenue is mainly collected through:",options:["Taxes","Donations","Loans from workers","Private gifts"],answer:0},
+{q:"An audit is carried out to check:",options:["Financial records","Political loyalty","Attendance","Promotion list"],answer:0},
+{q:"Misappropriation of funds leads to:",options:["Disciplinary action","Promotion","Award","Leave"],answer:0},
+
+{q:"Common law is based mainly on:",options:["Court decisions","Political speeches","Union rules","Administrative orders"],answer:0},
+{q:"A contract requires:",options:["Offer and acceptance","Threat","Force","Fraud"],answer:0},
+{q:"Trespass means:",options:["Entering property unlawfully","Signing agreement","Paying tax","Writing will"],answer:0},
+{q:"Negligence occurs when there is lack of:",options:["Duty of care","Salary payment","Contract signing","Property ownership"],answer:0},
+{q:"Defamation protects a person’s:",options:["Reputation","Salary","Family","Property"],answer:0},
+
+{q:"Nigeria became a republic in:",options:["1963","1960","1979","1999"],answer:0},
+{q:"The Nigerian President is elected for:",options:["4 years","3 years","5 years","6 years"],answer:0},
+{q:"Nigeria has how many states?",options:["36","30","40","20"],answer:0},
+{q:"The National Assembly is located in:",options:["Abuja","Lagos","Kaduna","Ibadan"],answer:0},
+{q:"The green colour in Nigerian flag represents:",options:["Agriculture","Peace","Power","Strength"],answer:0},
+
+{q:"Promotion in civil service depends largely on:",options:["Performance","Family background","Religion","Political connection"],answer:0},
+{q:"Civil servants are expected to maintain:",options:["Confidentiality","Public gossip","Rumor spreading","Political bias"],answer:0},
+{q:"Official secrets must be:",options:["Protected","Published online","Sold","Shared publicly"],answer:0},
+{q:"A civil servant must avoid:",options:["Conflict of interest","Hard work","Training","Efficiency"],answer:0},
+{q:"Unauthorized disclosure of government information is:",options:["Offence","Promotion","Routine","Training"],answer:0},
+
+{q:"Budget is prepared to plan:",options:["Government income and expenditure","Private salary","Political campaign","Union activity"],answer:0},
+{q:"Payment voucher is used to:",options:["Authorize payment","Record attendance","Approve leave","Record promotion"],answer:0},
+{q:"The Ministry of Finance supervises:",options:["Public funds","School curriculum","Judiciary","Police operations"],answer:0},
+{q:"Government financial year in Nigeria usually begins in:",options:["January","March","June","September"],answer:0},
+{q:"Public funds must be spent for:",options:["Authorized purposes","Personal projects","Political campaigns","Private loans"],answer:0},
+
+{q:"The doctrine of precedent ensures:",options:["Consistency in law","Political balance","Administrative power","Military control"],answer:0},
+{q:"Damages in civil cases are usually:",options:["Monetary compensation","Prison sentence","Death penalty","Community punishment"],answer:0},
+{q:"A witness gives testimony in:",options:["Court","Police barracks","Bank","Office"],answer:0},
+{q:"The Supreme Court is Nigeria’s:",options:["Highest court","Trial court","Military court","Customary court"],answer:0},
+{q:"Consideration in contract means:",options:["Something of value exchanged","Threat","Force","Gift only"],answer:0},
+
+{q:"Nigeria operates which system of government?",options:["Federal system","Unitary system","Military system","Traditional monarchy"],answer:0},
+{q:"The head of civil service ensures:",options:["Policy implementation","Election conduct","Judicial ruling","Security operation"],answer:0},
+{q:"The Federal Capital Territory is controlled by:",options:["Federal Government","State Government","Local Chiefs","Private authority"],answer:0},
+{q:"The official currency of Nigeria is:",options:["Naira","Dollar","Pound","Euro"],answer:0},
+{q:"Nigeria’s democracy returned in:",options:["1999","1985","1970","2005"],answer:0},
+
+{q:"Civil servants must report late regularly as:",options:["Misconduct","Efficiency","Merit","Training"],answer:0},
+{q:"Disciplinary measures include:",options:["Warning","Promotion","Award","Bonus"],answer:0},
+{q:"Leave of absence must be:",options:["Approved","Ignored","Automatic","Optional"],answer:0},
+{q:"Pension is paid after:",options:["Retirement","Promotion","Transfer","Training"],answer:0},
+{q:"Civil servants must obey:",options:["Lawful instructions","Personal opinion","Religious commands","Family advice"],answer:0},
+{q:"Revenue collected must be paid into:",options:["Government treasury","Personal account","Private bank","Office drawer"],answer:0},
+{q:"Audit queries are raised to:",options:["Correct irregularities","Promote staff","Punish workers","Transfer officers"],answer:0},
+{q:"Accounting officer is responsible for:",options:["Financial control","Security matters","Court judgments","Election conduct"],answer:0},
+{q:"Government expenditure must be:",options:["Properly documented","Secret","Oral","Random"],answer:0},
+{q:"Financial accountability means:",options:["Answerable for funds","Ignoring rules","Personal spending","Political spending"],answer:0},
+{q:"Tort law deals with:",options:["Civil wrongs","Criminal punishment","Taxation","Election law"],answer:0},
+{q:"Libel is defamation in:",options:["Written form","Spoken form","Digital only","Radio only"],answer:0},
+{q:"Slander is defamation in:",options:["Spoken form","Written form","Printed form","Published book"],answer:0},
+{q:"Binding precedent must be followed by:",options:["Lower courts","Legislators","Police","Private citizens"],answer:0},
+{q:"Equity supplements:",options:["Common law","Statutory law","Administrative law","Military law"],answer:0},
+{q:"Nigeria national pledge promotes:",options:["Unity","Division","War","Competition"],answer:0},
+{q:"The Senate President leads:",options:["Senate","Executive Council","Judiciary","House of Assembly"],answer:0},
+{q:"The House of Representatives represents:",options:["Constituencies","States only","Judiciary","Military"],answer:0},
+{q:"Nigeria has how many geopolitical zones?",options:["6","5","7","8"],answer:0},
+{q:"NYSC programme lasts:",options:["1 year","6 months","2 years","3 years"],answer:0},
+{q:"Civil servants should avoid:",options:["Nepotism","Hard work","Training","Efficiency"],answer:0},
+{q:"Merit system ensures:",options:["Fair promotion","Political appointment","Favoritism","Bias"],answer:0},
+{q:"Official records must be:",options:["Accurate","Altered","Destroyed","Hidden"],answer:0},
+{q:"Public servants must be:",options:["Impartial","Political activists","Biased","Corrupt"],answer:0},
+{q:"Training improves:",options:["Competence","Corruption","Negligence","Delay"],answer:0},
+{q:"Budget deficit occurs when:",options:["Expenditure exceeds revenue","Revenue exceeds expenditure","Both equal","No revenue"],answer:0},
+{q:"Appropriation Act authorizes:",options:["Government spending","Private spending","Union dues","Bank loans"],answer:0},
+{q:"Supplementary budget is used when:",options:["Extra funds required","Funds are surplus","Budget cancelled","Budget delayed"],answer:0},
+{q:"Government expenditure classification includes:",options:["Capital and recurrent","Private and public","Short and long","Local and foreign"],answer:0},
+{q:"Treasury controls:",options:["Government funds","Military operations","Court cases","Union activities"],answer:0},
+{q:"Offer in contract law is:",options:["Proposal to contract","Payment","Threat","Gift"],answer:0},
+{q:"Acceptance must be:",options:["Unconditional","Partial","Hidden","Delayed"],answer:0},
+{q:"Void contract is:",options:["Legally unenforceable","Fully valid","Government approved","Binding"],answer:0},
+{q:"Legal capacity refers to:",options:["Ability to contract","Wealth","Age only","Education"],answer:0},
+{q:"A minor contract is usually:",options:["Voidable","Valid always","Illegal","Binding always"],answer:0},
+{q:"Nigeria Independence Day is:",options:["October 1","January 1","May 29","June 12"],answer:0},
+{q:"The Nigerian coat of arms motto is:",options:["Unity and Faith, Peace and Progress","Freedom and Justice","Power and Glory","Strength and Honour"],answer:0},
+{q:"The Chief Justice heads:",options:["Judiciary","Executive","Legislature","Civil Service"],answer:0},
+{q:"Local government is headed by:",options:["Chairman","Governor","Minister","Judge"],answer:0},
+{q:"Nigeria population is largest in:",options:["Africa","Asia","Europe","America"],answer:0},
+{q:"Civil service neutrality means:",options:["No political bias","Supporting ruling party","Opposing government","Joining political rallies"],answer:0},
+{q:"Serious misconduct can lead to:",options:["Dismissal","Promotion","Transfer","Award"],answer:0},
+{q:"Public servants must protect:",options:["Government property","Private property only","Personal property","Union property"],answer:0},
+{q:"Duty of care means:",options:["Act responsibly","Ignore risk","Delay work","Avoid supervision"],answer:0},
+{q:"Civil servants retirement benefits include:",options:["Pension and gratuity","Promotion","Bonus","Transfer"],answer:0},
+{q:"Public servants are expected to act in accordance with:",options:["Public interest","Personal interest","Party interest","Family interest"],answer:0},
+{q:"A civil servant who falsifies records commits:",options:["Serious misconduct","Promotion act","Routine duty","Transfer offence"],answer:0},
+{q:"Civil service rules promote:",options:["Orderliness","Confusion","Bias","Corruption"],answer:0},
+{q:"Unauthorized leave from duty is classified as:",options:["Misconduct","Promotion","Reward","Transfer"],answer:0},
+{q:"Government property must be used for:",options:["Official purposes","Personal use","Political campaigns","Private business"],answer:0},
+
+{q:"The primary aim of financial regulation is to ensure:",options:["Proper use of public funds","Political influence","Private profit","Union control"],answer:0},
+{q:"Public funds should be withdrawn through:",options:["Approved procedures","Verbal approval","Personal request","Union directive"],answer:0},
+{q:"Revenue generated by government is called:",options:["Public revenue","Private revenue","Union revenue","Personal revenue"],answer:0},
+{q:"Payment without proper authorization is:",options:["Financial irregularity","Promotion requirement","Training procedure","Transfer action"],answer:0},
+{q:"Financial records must be kept for:",options:["Accountability","Decoration","Private use","Political interest"],answer:0},
+
+{q:"A tort occurs when a person suffers:",options:["Civil injury","Political loss","Salary delay","Promotion delay"],answer:0},
+{q:"Breach of contract means:",options:["Failure to fulfill agreement","Signing agreement","Making offer","Accepting offer"],answer:0},
+{q:"Negligence may result in:",options:["Civil liability","Promotion","Award","Transfer"],answer:0},
+{q:"An agreement becomes a contract when:",options:["Legally binding","Written only","Verbal only","Witnessed by police"],answer:0},
+{q:"A legal right can be enforced through:",options:["Court","Union","Family","Friends"],answer:0},
+
+{q:"Nigeria practices which form of democracy?",options:["Representative democracy","Direct democracy","Military democracy","Monarchical democracy"],answer:0},
+{q:"The Nigerian legislature is responsible for:",options:["Making laws","Executing laws","Interpreting laws","Military command"],answer:0},
+{q:"The Executive arm of government implements:",options:["Policies and laws","Court rulings only","Union decisions","Private rules"],answer:0},
+{q:"The Judiciary interprets:",options:["Laws","Budgets","Union policies","Party manifestos"],answer:0},
+{q:"Nigeria's Independence was achieved from:",options:["Britain","France","Germany","Portugal"],answer:0},
+
+{q:"Civil servants must treat members of the public with:",options:["Courtesy","Hostility","Bias","Neglect"],answer:0},
+{q:"Official information should be released only by:",options:["Authorized officers","Any civil servant","Union leaders","Private citizens"],answer:0},
+{q:"Civil servants must maintain:",options:["Professional ethics","Political loyalty","Family loyalty","Religious loyalty"],answer:0},
+{q:"Disciplinary panels are set up to:",options:["Investigate misconduct","Promote staff","Increase salary","Transfer workers"],answer:0},
+{q:"Civil servants must avoid misuse of:",options:["Official position","Salary","Training","Promotion"],answer:0},
+
+{q:"Government budget helps to:",options:["Control expenditure","Promote corruption","Encourage private profit","Delay projects"],answer:0},
+{q:"Recurrent expenditure includes:",options:["Salary payment","Building bridges","Constructing roads","Buying land"],answer:0},
+{q:"Capital expenditure refers to:",options:["Infrastructure development","Salary payment","Office stationery","Travel allowance"],answer:0},
+{q:"Government audit is carried out annually to:",options:["Ensure accountability","Promote corruption","Reduce staff","Increase taxes"],answer:0},
+{q:"Treasury ensures:",options:["Safe custody of public funds","Political campaigns","Union meetings","Private business"],answer:0},
+
+{q:"Consideration in contract law must be:",options:["Lawful","Illegal","Hidden","Forced"],answer:0},
+{q:"A void contract is one that:",options:["Has no legal effect","Is fully binding","Is government approved","Is witnessed"],answer:0},
+{q:"Legal remedy for breach of contract is:",options:["Damages","Promotion","Award","Transfer"],answer:0},
+{q:"The person bringing a civil case is called:",options:["Plaintiff","Defendant","Judge","Witness"],answer:0},
+{q:"The person defending a civil case is called:",options:["Defendant","Plaintiff","Judge","Registrar"],answer:0},
+
+{q:"Nigeria celebrates Democracy Day on:",options:["June 12","October 1","May 29","January 15"],answer:0},
+{q:"The Nigerian National Anthem promotes:",options:["Unity and patriotism","Political rivalry","Military rule","Colonial control"],answer:0},
+{q:"The Nigerian Constitution is the:",options:["Supreme law","Local law","Union law","Party law"],answer:0},
+{q:"State government is headed by:",options:["Governor","President","Chairman","Judge"],answer:0},
+{q:"Local government exists mainly to:",options:["Bring governance closer to the people","Control federal budget","Manage judiciary","Control military"],answer:0},
+
+{q:"Public service promotions should be based on:",options:["Merit and experience","Political influence","Family ties","Religion"],answer:0},
+{q:"Public servants must protect:",options:["Government assets","Private property only","Union property","Family property"],answer:0},
+{q:"Official correspondence must follow:",options:["Approved procedure","Personal format","Union rules","Political format"],answer:0},
+{q:"Training programmes in civil service aim to:",options:["Improve efficiency","Encourage corruption","Reduce staff","Delay work"],answer:0},
+{q:"Civil servants must ensure proper record keeping for:",options:["Accountability","Decoration","Political interest","Union use"],answer:0},
+{q:"Civil servants must avoid using official influence for?", options:["Personal gain","Public service","Training","Efficiency"], answer:0},
+{q:"Which office approves the appointment of permanent secretaries?", options:["Federal Civil Service Commission","National Assembly","Supreme Court","Ministry of Finance"], answer:0},
+{q:"Financial Regulations require public funds to be spent on?", options:["Authorized purposes","Political campaigns","Union events","Private business"], answer:0},
+{q:"Public officers should not engage in?", options:["Political party activities during official hours","Official duties","Training","Public service"], answer:0},
+{q:"The doctrine of precedent ensures?", options:["Consistency in judicial decisions","Random judgments","Political control","Favoritism"], answer:0},
+{q:"Unauthorized absence may lead to?", options:["Disciplinary action","Promotion","Award","Leave"], answer:0},
+{q:"Public servants’ promotion depends on?", options:["Merit and performance","Religion","Tribe","Political affiliation"], answer:0},
+{q:"Government revenue must be paid into?", options:["Consolidated Revenue Fund","Personal account","Union account","Departmental wallet"], answer:0},
+{q:"Civil service ethics emphasize?", options:["Integrity and professionalism","Nepotism","Bribery","Favoritism"], answer:0},
+{q:"Auditor-General checks government accounts for?", options:["Accuracy and compliance","Political advantage","Favoritism","Salary issues"], answer:0},
+{q:"Probation allows assessment of?", options:["Performance and suitability","Political loyalty","Religion","Tribe"], answer:0},
+{q:"Common law is mainly developed by?", options:["Judicial decisions","Legislation","Military decrees","International bodies"], answer:0},
+{q:"Payment vouchers support?", options:["Expenditure","Attendance","Promotion","Leave"], answer:0},
+{q:"Negligence in tort law refers to?", options:["Failure to exercise reasonable care","Bribery","Political loyalty","Promotion"], answer:0},
+{q:"A valid contract requires?", options:["Offer, acceptance, consideration, legal purpose","Bribery","Force","No witnesses"], answer:0},
+{q:"Public officers must avoid accepting?", options:["Gifts that may influence official duty","Official instructions","Budget approval","Training"], answer:0},
+{q:"Nigeria operates a federal system of government?", options:["Yes","No","Maybe","Unknown"], answer:0},
+{q:"Supreme Court interprets?", options:["Constitution","Contracts","Union rules","Election matters"], answer:0},
+{q:"Public officers’ continuous training promotes?", options:["Competence","Favoritism","Negligence","Delay"], answer:0},
+{q:"Financial Regulations ensure?", options:["Accountability","Corruption","Favoritism","Political control"], answer:0},
+{q:"Civil servants must be politically?", options:["Neutral","Active","Militant","Partisan"], answer:0},
+{q:"Budget approval is by?", options:["National Assembly","Executive only","Judiciary","Civil servants"], answer:0},
+{q:"Imprest is used for?", options:["Minor expenses","Salary","Political activities","Union events"], answer:0},
+{q:"Public service ethics demand?", options:["Integrity and loyalty","Bribery","Nepotism","Favoritism"], answer:0},
+{q:"Government stores must be managed according to?", options:["Financial Regulations","Labour law","Police Act","Electoral Act"], answer:0},
+{q:"Cashbook records?", options:["Cash transactions","Store items","Promotion","Leave"], answer:0},
+{q:"Trespass in tort law affects?", options:["Property","Marriage","Education","Politics"], answer:0},
+{q:"Defamation harms?", options:["Reputation","Property","Salary","Education"], answer:0},
+{q:"Federal Capital Territory is located in?", options:["Abuja","Lagos","Kano","Ibadan"], answer:0},
+{q:"Civil service disciplinary action is guided by?", options:["Public Service Rules","Financial Regulations","Contract law","Criminal law"], answer:0},
+{q:"Unauthorized spending is?", options:["Illegal","Legal","Routine","Optional"], answer:0},
+{q:"Public officers must treat citizens with?", options:["Courtesy","Neglect","Bias","Harshness"], answer:0},
+{q:"Libel is defamation in?", options:["Written form","Spoken form","Military order","Religion"], answer:0},
+{q:"Battery is?", options:["Intentional harmful contact","Negligence","Offer","Acceptance"], answer:0},
+{q:"Probation period allows assessment of?", options:["Performance","Political affiliation","Tribe","Religion"], answer:0},
+{q:"Revenue collection must issue?", options:["Receipt","Memo","Promotion letter","ID card"], answer:0},
+{q:"A tort is?", options:["Civil wrong","Criminal offense","Salary issue","Promotion issue"], answer:0},
+{q:"Public service discipline ensures?", options:["Order and efficiency","Favoritism","Corruption","Political control"], answer:0},
+{q:"Public officers’ oath promotes?", options:["Secrecy and integrity","Favoritism","Nepotism","Bribery"], answer:0},
+{q:"Budget deficit occurs when?", options:["Expenditure exceeds revenue","Revenue exceeds expenditure","Revenue equals expenditure","None"], answer:0},
+{q:"Promotion in civil service is based on?", options:["Merit and seniority","Religion","Tribe","Political party"], answer:0},
+{q:"Unauthorized removal of store items is?", options:["Misconduct","Promotion","Leave","Transfer"], answer:0},
+{q:"Civil service retirement age is usually?", options:["60 years","55 years","65 years","70 years"], answer:0},
+{q:"Public funds are kept in?", options:["Consolidated Revenue Fund","Personal account","Union fund","Private bank"], answer:0},
+{q:"Common law originated from?", options:["England","France","Germany","USA"], answer:0},
+{q:"Public officers must avoid?", options:["Conflict of interest","Efficiency","Hard work","Loyalty"], answer:0},
+{q:"Auditor-General ensures?", options:["Accuracy of public accounts","Salary delay","Favoritism","Political advantage"], answer:0},
+{q:"Cash advance must be?", options:["Retired in time","Kept indefinitely","Ignored","Delayed"], answer:0},
+{q:"Civil servants’ duty is to?", options:["Serve the public","Promote political party","Favor relatives","Ignore rules"], answer:0},
+{q:"Financial Regulations govern?", options:["Public financial management","Trade licenses","Civil service discipline","Private business"], answer:0},
+{q:"Consideration in contract means?", options:["Exchange of value","Police approval","Union agreement","Religious approval"], answer:0},
+{q:"Nigeria’s official language is?", options:["English","Hausa","Yoruba","Igbo"], answer:0},
+{q:"Public officers must avoid accepting gifts because?", options:["It may influence official duty","It promotes efficiency","It increases salary","It encourages training"], answer:0},
+{q:"Public funds misuse is a violation of?", options:["Financial Regulations","Common law","Customary law","Civil Service Rules"], answer:0},
+{q:"Civil service training promotes?", options:["Competence","Favoritism","Negligence","Delay"], answer:0},
+{q:"Libel differs from slander because it is?", options:["Written","Spoken","Physical","Digital"], answer:0},
+{q:"Nigeria has how many states?", options:["36","35","37","34"], answer:0},
+{q:"Supreme Court interprets?", options:["Constitution","Contracts","Union rules","Election matters"], answer:0},
+{q:"Public officers’ oath ensures?", options:["Secrecy and integrity","Bribery","Nepotism","Favoritism"], answer:0},
+{q:"Budget implementation is monitored by?", options:["Ministries and Finance authorities","Police","Military","Traditional rulers"], answer:0},
+{q:"Cashbook records?", options:["Cash transactions","Store items","Promotion","Leave"], answer:0},
+{q:"Payment vouchers authorize?", options:["Expenditure","Attendance","Promotion","Leave"], answer:0},
+{q:"Financial Regulations promote?", options:["Accountability","Favoritism","Secrecy","Political control"], answer:0},
+{q:"Imprest is used for?", options:["Minor expenses","Salary","Political activities","Union events"], answer:0},
+{q:"Public service ethics emphasize?", options:["Integrity and professionalism","Bribery","Favoritism","Nepotism"], answer:0},
+{q:"Defamation harms?", options:["Reputation","Property","Salary","Education"], answer:0},
+{q:"Common law tort includes?", options:["Negligence","Salary","Promotion","Political loyalty"], answer:0},
+{q:"Unauthorized absence from duty is?", options:["Misconduct","Promotion","Award","Training"], answer:0},
+{q:"Public officers must treat citizens with?", options:["Courtesy","Harshness","Bias","Neglect"], answer:0},
+{q:"Civil service promotion depends on?", options:["Merit and performance","Tribe","Religion","Political party"], answer:0},
+{q:"Nigeria operates a federal system?", options:["Yes","No","Maybe","Unknown"], answer:0},
+{q:"Public officers should not engage in?", options:["Private business during office hours","Official work","Training","Public service"], answer:0},
+{q:"Negligence requires proof of?", options:["Duty of care","Intent","Salary grade","Religion"], answer:0},
+{q:"A valid contract is formed when?", options:["Offer, acceptance, consideration, legal purpose","Bribery","Force","No witnesses"], answer:0},
+{q:"Nigeria’s currency is?", options:["Naira","Dollar","Pound","Euro"], answer:0},
+{q:"Federal Capital Territory is?", options:["Abuja","Lagos","Port Harcourt","Kano"], answer:0},
+{q:"Civil service code emphasizes?", options:["Impartiality","Partiality","Bribery","Nepotism"], answer:0},
+{q:"Civil servants must submit their annual returns to?", options:["Code of Conduct Bureau","Federal Civil Service Commission","National Assembly","Supreme Court"], answer:0},
+{q:"Who approves public service recruitment?", options:["Federal Civil Service Commission","Minister of Finance","Auditor-General","Supreme Court"], answer:0},
+{q:"Misuse of public funds is classified as?", options:["Financial misconduct","Promotion criteria","Union activity","Training requirement"], answer:0},
+{q:"The Public Service Rules regulate?", options:["Conduct of civil servants","Bank operations","Elections","Private business"], answer:0},
+{q:"Government expenditures must be within?", options:["Approved budget","Union agreement","Personal discretion","Political priority"], answer:0},
+{q:"Common law courts rely on?", options:["Precedent","Executive orders","Legislation only","Public opinion"], answer:0},
+{q:"Probation period assesses?", options:["Performance and suitability","Political loyalty","Tribal affiliation","Religion"], answer:0},
+{q:"Public officers must avoid?", options:["Conflict of interest","Hard work","Efficiency","Loyalty"], answer:0},
+{q:"Financial Regulations aim to ensure?", options:["Accountability","Favoritism","Secrecy","Political control"], answer:0},
+{q:"Cashbook is used to record?", options:["Cash transactions","Promotions","Leave days","Training sessions"], answer:0},
+{q:"Unauthorized absence is treated as?", options:["Misconduct","Merit","Award","Promotion"], answer:0},
+{q:"Promotion in civil service is based on?", options:["Merit and seniority","Religion","Political loyalty","Tribe"], answer:0},
+{q:"The head of civil service is appointed by?", options:["President","Governor","National Assembly","Chief Justice"], answer:0},
+{q:"Public funds are deposited into?", options:["Consolidated Revenue Fund","Personal account","Union account","Departmental wallet"], answer:0},
+{q:"Civil service ethics demand?", options:["Integrity and professionalism","Nepotism","Bribery","Favoritism"], answer:0},
+{q:"Auditor-General ensures?", options:["Accuracy of government accounts","Salary delay","Favoritism","Political advantage"], answer:0},
+{q:"Common law originated from?", options:["England","France","Germany","USA"], answer:0},
+{q:"A tort involves?", options:["Civil wrong","Criminal offense","Promotion","Salary issue"], answer:0},
+{q:"Payment vouchers are used to?", options:["Authorize expenditure","Record attendance","Approve leave","Register staff"], answer:0},
+{q:"Negligence in tort law means?", options:["Failure to exercise reasonable care","Bribery","Promotion","Political loyalty"], answer:0},
+{q:"A valid contract requires?", options:["Offer, acceptance, consideration, legal purpose","Bribery","Force","No witnesses"], answer:0},
+{q:"Public officers must not accept?", options:["Gifts influencing duty","Official instructions","Training","Budget approval"], answer:0},
+{q:"Nigeria operates a federal system. True or False?", options:["True","False","Maybe","Unknown"], answer:0},
+{q:"Supreme Court handles?", options:["Constitutional interpretation","Contracts","Union rules","Election matters"], answer:0},
+{q:"Continuous training improves?", options:["Competence","Favoritism","Negligence","Delay"], answer:0},
+{q:"Financial Regulations ensure?", options:["Transparency and accountability","Corruption","Favoritism","Political control"], answer:0},
+{q:"Civil servants must be politically?", options:["Neutral","Active","Militant","Partisan"], answer:0},
+{q:"Budget approval is by?", options:["National Assembly","Executive only","Judiciary","Civil servants"], answer:0},
+{q:"Imprest is meant for?", options:["Minor expenses","Salary","Political activities","Union events"], answer:0},
+{q:"Public service ethics promote?", options:["Integrity and loyalty","Bribery","Nepotism","Favoritism"], answer:0},
+{q:"Government stores are managed under?", options:["Financial Regulations","Labour law","Police Act","Electoral Act"], answer:0},
+{q:"Cashbook records?", options:["Cash transactions","Store items","Promotion","Leave"], answer:0},
+{q:"Trespass affects?", options:["Property","Marriage","Education","Politics"], answer:0},
+{q:"Defamation harms?", options:["Reputation","Property","Salary","Education"], answer:0},
+{q:"Federal Capital Territory is in?", options:["Abuja","Lagos","Kano","Ibadan"], answer:0},
+{q:"Civil service disciplinary action follows?", options:["Public Service Rules","Financial Regulations","Contract law","Criminal law"], answer:0},
+{q:"Unauthorized spending is?", options:["Illegal","Legal","Routine","Optional"], answer:0},
+{q:"Public officers must treat citizens with?", options:["Courtesy","Neglect","Bias","Harshness"], answer:0},
+{q:"Libel differs from slander because it is?", options:["Written","Spoken","Physical","Digital"], answer:0},
+{q:"Battery in law refers to?", options:["Intentional harmful contact","Negligence","Offer","Acceptance"], answer:0},
+{q:"Probation period allows assessment of?", options:["Performance","Political affiliation","Tribe","Religion"], answer:0},
+{q:"Revenue collection must issue?", options:["Receipt","Memo","Promotion letter","ID card"], answer:0},
+{q:"Public service discipline ensures?", options:["Order and efficiency","Favoritism","Corruption","Political control"], answer:0},
+{q:"Public officers’ oath promotes?", options:["Secrecy and integrity","Favoritism","Nepotism","Bribery"], answer:0},
+{q:"Budget deficit occurs when?", options:["Expenditure exceeds revenue","Revenue exceeds expenditure","Revenue equals expenditure","None"], answer:0},
+{q:"Promotion depends on?", options:["Merit and performance","Religion","Tribe","Political party"], answer:0},
+{q:"Unauthorized removal of stores is?", options:["Misconduct","Promotion","Leave","Transfer"], answer:0},
+{q:"Civil service retirement age is usually?", options:["60 years","55 years","65 years","70 years"], answer:0},
+{q:"Public funds are kept in?", options:["Consolidated Revenue Fund","Personal account","Union fund","Private bank"], answer:0},
+{q:"Common law source is?", options:["Judicial decisions","Legislation only","Military orders","Customs"], answer:0},
+{q:"Public officers must avoid?", options:["Conflict of interest","Efficiency","Hard work","Loyalty"], answer:0},
+{q:"Auditor-General ensures?", options:["Accuracy of public accounts","Salary delay","Favoritism","Political advantage"], answer:0},
+{q:"Cash advance must be?", options:["Retired in time","Kept indefinitely","Ignored","Delayed"], answer:0},
+{q:"Civil servants’ duty is to?", options:["Serve the public","Promote political party","Favor relatives","Ignore rules"], answer:0},
+{q:"Financial Regulations govern?", options:["Public financial management","Trade licenses","Civil service discipline","Private business"], answer:0},
+{q:"Consideration in contract means?", options:["Exchange of value","Police approval","Union agreement","Religious approval"], answer:0},
+{q:"Nigeria’s official language is?", options:["English","Hausa","Yoruba","Igbo"], answer:0},
+{q:"Public officers must avoid gifts because?", options:["It may influence official duty","It promotes efficiency","It increases salary","It encourages training"], answer:0},
+{q:"Public funds misuse violates?", options:["Financial Regulations","Common law","Customary law","Civil Service Rules"], answer:0},
+{q:"Civil service training promotes?", options:["Competence","Favoritism","Negligence","Delay"], answer:0},
+{q:"Libel is?", options:["Written defamation","Spoken defamation","Physical","Digital"], answer:0},
+{q:"Nigeria has how many states?", options:["36","35","37","34"], answer:0},
+{q:"Supreme Court interprets?", options:["Constitution","Contracts","Union rules","Election matters"], answer:0},
+{q:"Public officers’ oath ensures?", options:["Secrecy and integrity","Bribery","Nepotism","Favoritism"], answer:0},
+{q:"Budget implementation is monitored by?", options:["Ministries and Finance authorities","Police","Military","Traditional rulers"], answer:0},
+{q:"Cashbook records?", options:["Cash transactions","Store items","Promotion","Leave"], answer:0},
+{q:"Payment vouchers authorize?", options:["Expenditure","Attendance","Promotion","Leave"], answer:0},
+{q:"Financial Regulations promote?", options:["Accountability","Favoritism","Secrecy","Political control"], answer:0},
+{q:"Imprest is used for?", options:["Minor expenses","Salary","Political activities","Union events"], answer:0},
+{q:"Public service ethics emphasize?", options:["Integrity and professionalism","Bribery","Favoritism","Nepotism"], answer:0},
+{q:"Defamation harms?", options:["Reputation","Property","Salary","Education"], answer:0},
+{q:"Common law tort includes?", options:["Negligence","Salary","Promotion","Political loyalty"], answer:0},
+{q:"Unauthorized absence is?", options:["Misconduct","Promotion","Award","Training"], answer:0},
+{q:"Public officers must treat citizens with?", options:["Courtesy","Harshness","Bias","Neglect"], answer:0},
+{q:"Civil service promotion depends on?", options:["Merit and performance","Tribe","Religion","Political party"], answer:0},
+{q:"Nigeria operates a federal system?", options:["Yes","No","Maybe","Unknown"], answer:0},
+{q:"Public officers should not engage in?", options:["Private business during office hours","Official work","Training","Public service"], answer:0},
+{q:"Negligence requires proof of?", options:["Duty of care","Intent","Salary grade","Religion"], answer:0},
+{q:"A valid contract is formed when?", options:["Offer, acceptance, consideration, legal purpose","Bribery","Force","No witnesses"], answer:0},
+{q:"Nigeria’s currency is?", options:["Naira","Dollar","Pound","Euro"], answer:0},
+{q:"Federal Capital Territory is?", options:["Abuja","Lagos","Port Harcourt","Kano"], answer:0},
+{q:"Civil service code emphasizes?", options:["Impartiality","Partiality","Bribery","Nepotism"], answer:0},
+{q:"Nigeria gained independence in?", options:["1960","1970","1950","1980"], answer:0},
+{q:"The largest state by land area in Nigeria is?", options:["Niger","Lagos","Kano","Oyo"], answer:0},
+{q:"The national currency of Nigeria is?", options:["Naira","Dollar","Pound","Euro"], answer:0},
+{q:"The capital of Nigeria is?", options:["Abuja","Lagos","Kano","Port Harcourt"], answer:0},
+{q:"Which body oversees public service recruitment?", options:["Federal Civil Service Commission","National Assembly","Supreme Court","CBN"], answer:0},
+{q:"Public officers must avoid?", options:["Conflict of interest","Bribery","Nepotism","Favoritism"], answer:0},
+{q:"Financial Regulations are meant to ensure?", options:["Proper use of public funds","Political campaigns","Private business","Union affairs"], answer:0},
+{q:"Civil service promotions depend on?", options:["Merit and performance","Religion","Tribe","Political loyalty"], answer:0},
+{q:"Common law originated in?", options:["England","France","Germany","USA"], answer:0},
+{q:"Negligence is a type of?", options:["Tort","Contract","Statute","Regulation"], answer:0},
+{q:"Public funds must be used for?", options:["Authorized purposes","Political donations","Union activities","Private business"], answer:0},
+{q:"The Federal Capital Territory (FCT) is located in?", options:["Abuja","Lagos","Port Harcourt","Kano"], answer:0},
+{q:"The President of Nigeria appoints?", options:["Head of Civil Service","Supreme Court Justices","Senators","Police IG"], answer:0},
+{q:"The National Anthem of Nigeria has?", options:["2 stanzas","1 stanza","3 stanzas","4 stanzas"], answer:0},
+{q:"Continuous training in civil service promotes?", options:["Competence","Favoritism","Delay","Negligence"], answer:0},
+{q:"Public Service Rules (PSR) regulate?", options:["Conduct of civil servants","Trade licenses","Elections","Banking operations"], answer:0},
+{q:"Probation allows assessment of?", options:["Performance","Religion","Tribe","Political loyalty"], answer:0},
+{q:"Unauthorized absence from duty is?", options:["Misconduct","Promotion","Award","Training"], answer:0},
+{q:"Treasury Single Account (TSA) helps?", options:["Consolidate government revenue","Promote corruption","Delay payments","Reduce transparency"], answer:0},
+{q:"Auditor-General ensures?", options:["Accuracy of public accounts","Political favoritism","Salary delay","Union advantage"], answer:0},
+{q:"Civil servants must be politically?", options:["Neutral","Active","Militant","Partisan"], answer:0},
+{q:"Budget is approved by?", options:["National Assembly","Executive only","Judiciary","Civil servants"], answer:0},
+{q:"Financial Regulations promote?", options:["Accountability","Favoritism","Secrecy","Political control"], answer:0},
+{q:"Imprest is used for?", options:["Minor expenses","Salary","Political activities","Union events"], answer:0},
+{q:"Public officers must not accept?", options:["Gifts influencing duty","Official instructions","Training","Budget approval"], answer:0},
+{q:"Defamation harms?", options:["Reputation","Property","Salary","Education"], answer:0},
+{q:"Battery is?", options:["Intentional harmful contact","Negligence","Offer","Acceptance"], answer:0},
+{q:"Cashbook records?", options:["Cash transactions","Store items","Promotion","Leave"], answer:0},
+{q:"Unauthorized removal of stores is?", options:["Misconduct","Promotion","Leave","Transfer"], answer:0},
+{q:"Civil service retirement age is usually?", options:["60 years","55 years","65 years","70 years"], answer:0},
+{q:"Revenue collection must issue?", options:["Receipts","Memo","Promotion letter","ID card"], answer:0},
+{q:"Consideration in contract means?", options:["Exchange of value","Police approval","Union agreement","Religious approval"], answer:0},
+{q:"Plaintiff bears the burden of proof in?", options:["Civil cases","Criminal cases","Military tribunals","Election disputes"], answer:0},
+{q:"A valid contract requires?", options:["Offer, acceptance, consideration, legal purpose","Bribery","Force","No witnesses"], answer:0},
+{q:"Public officers’ oath ensures?", options:["Secrecy and integrity","Favoritism","Nepotism","Bribery"], answer:0},
+{q:"Nigeria’s official language is?", options:["English","Hausa","Yoruba","Igbo"], answer:0},
+{q:"Public funds misuse is a violation of?", options:["Financial Regulations","Common law","Customary law","Civil Service Rules"], answer:0},
+{q:"Civil service code emphasizes?", options:["Impartiality","Partiality","Bribery","Nepotism"], answer:0},
+{q:"Nigeria operates a federal system. True or False?", options:["True","False","Maybe","Not sure"], answer:0},
+{q:"Supreme Court interprets?", options:["Constitution","Contracts","Union rules","Election matters"], answer:0},
+{q:"Defamation can be?", options:["Libel or Slander","Battery or Assault","Contract or Tort","Crime or Tort"], answer:0},
+{q:"Libel is?", options:["Written defamation","Spoken defamation","Physical harm","Digital transaction"], answer:0},
+{q:"Civil service disciplinary action follows?", options:["Public Service Rules","Financial Regulations","Contract law","Criminal law"], answer:0},
+{q:"Public service ethics emphasize?", options:["Integrity and professionalism","Bribery","Favoritism","Nepotism"], answer:0},
+{q:"Civil service promotions depend on?", options:["Merit and seniority","Tribe","Religion","Political party"], answer:0},
+{q:"Unauthorized spending is?", options:["Illegal","Legal","Routine","Optional"], answer:0},
+{q:"Public officers must treat citizens with?", options:["Courtesy","Neglect","Bias","Harshness"], answer:0},
+{q:"Treasury documents must be retained for?", options:["Audit purposes","Decoration","Promotion","Union purposes"], answer:0},
+{q:"Budget deficit occurs when?", options:["Expenditure exceeds revenue","Revenue exceeds expenditure","Revenue equals expenditure","None"], answer:0},
+{q:"Public funds are deposited into?", options:["Consolidated Revenue Fund","Personal account","Union account","Private bank"], answer:0},
+{q:"Cash advance must be?", options:["Retired in time","Kept indefinitely","Ignored","Delayed"], answer:0},
+{q:"Negligence requires proof of?", options:["Duty of care","Intent","Salary grade","Religion"], answer:0},
+{q:"A tort includes?", options:["Negligence, Trespass, Defamation","Salary, Promotion, Leave","Union, Party, Religion","Crime, Contract, Statute"], answer:0},
+{q:"Imprest is accounted for by?", options:["Receipts and expenditure","Salary only","Leave record","Training logs"], answer:0},
+{q:"Civil service retirement benefits are?", options:["Pension and gratuity","Salary only","Promotion","Union allowance"], answer:0},
+{q:"Public officers must avoid?", options:["Conflict of interest","Efficiency","Hard work","Loyalty"], answer:0},
+{q:"Federal Civil Service Commission handles?", options:["Recruitment and confirmation","Judging courts","Writing laws","Running banks"], answer:0},
+{q:"Common law relies on?", options:["Judicial precedent","Legislation only","Executive orders","Public opinion"], answer:0},
+{q:"Federal Capital Territory is abbreviated as?", options:["FCT","FCC","FGC","FCR"], answer:0},
+{q:"Nigeria has how many states?", options:["36","35","37","34"], answer:0},
+{q:"National Assembly consists of?", options:["Senate and House of Representatives","Only Senate","Only House","Supreme Court"], answer:0},
+{q:"Treasury Single Account (TSA) prevents?", options:["Fragmented government accounts","Public training","Union interference","Promotion bias"], answer:0},
+{q:"Public officers’ oath promotes?", options:["Integrity","Favoritism","Bribery","Nepotism"], answer:0},
+{q:"Civil servants’ duty is to?", options:["Serve the public","Promote political party","Favor relatives","Ignore rules"], answer:0},
+{q:"Public officers should avoid?", options:["Conflict of interest","Hard work","Efficiency","Loyalty"], answer:0},
+{q:"Auditor-General checks?", options:["Public accounts","Salary only","Political party funding","Union accounts"], answer:0},
+{q:"Financial Regulations promote?", options:["Accountability","Favoritism","Secrecy","Political control"], answer:0},
+{q:"Civil service code requires?", options:["Impartiality","Partiality","Nepotism","Bribery"], answer:0},
+{q:"Nigeria’s national motto is?", options:["Unity and Faith, Peace and Progress","Freedom and Justice","Unity and Strength","Peace for All"], answer:0},
+{q:"The largest river in Nigeria is?", options:["Niger River","Benue River","Cross River","Kaduna River"], answer:0},
+{q:"Nigeria’s population is approximately?", options:["220 million","150 million","180 million","200 million"], answer:0},
+{q:"The main religion in Nigeria is?", options:["Christianity and Islam","Hinduism","Buddhism","Judaism"], answer:0},
+{q:"The official residence of the Nigerian President is?", options:["Aso Rock Villa","Lagos House","Abuja Lodge","National Mansion"], answer:0},
+{q:"Nigeria shares a border with?", options:["Benin, Niger, Chad, Cameroon","Ghana, Mali, Senegal","Ivory Coast, Togo","South Africa, Kenya"], answer:0},
+{q:"The head of the Federal Civil Service is?", options:["Secretary to the Government of the Federation","President","National Assembly Speaker","Chief Justice"], answer:0},
+{q:"Public officers’ continuous learning helps?", options:["Improve competence","Reduce salary","Promote nepotism","Delay service"], answer:0},
+{q:"Financial Regulations apply to?", options:["All government expenditures","Private businesses","Union funds only","Political campaigns"], answer:0},
+{q:"Civil service promotions must avoid?", options:["Political favoritism","Merit-based assessment","Performance","Seniority"], answer:0},
+{q:"Nigeria operates under which system?", options:["Presidential federal system","Parliamentary system","Monarchy","Military rule"], answer:0},
+{q:"The Nigerian flag colors are?", options:["Green, White, Green","Red, White, Blue","Blue, Yellow, Green","Black, White, Red"], answer:0},
+{q:"National currency symbol is?", options:["₦","$","£","€"], answer:0},
+{q:"The official language for government documents is?", options:["English","Hausa","Igbo","Yoruba"], answer:0},
+{q:"Civil service ethics require?", options:["Integrity and professionalism","Bribery","Favoritism","Nepotism"], answer:0},
+{q:"Unauthorized absence may lead to?", options:["Disciplinary action","Promotion","Award","Leave"], answer:0},
+{q:"Financial Regulations require?", options:["Transparency and accountability","Secrecy","Political bias","Favoritism"], answer:0},
+{q:"Nigeria’s largest city by population is?", options:["Lagos","Kano","Ibadan","Port Harcourt"], answer:0},
+{q:"The current Nigerian currency is?", options:["Naira","Dollar","Pound","Euro"], answer:0},
+{q:"Federal Government’s financial year starts in?", options:["January","March","July","October"], answer:0},
+{q:"Public officers must submit asset declaration to?", options:["Code of Conduct Bureau","National Assembly","Supreme Court","Ministry of Finance"], answer:0},
+{q:"Nigeria’s Independence Day is on?", options:["1st October","1st January","12th June","29th May"], answer:0},
+{q:"Civil servants’ duty includes?", options:["Serving the public","Promoting political party","Favor relatives","Ignoring rules"], answer:0}
+];
+// ===== QUIZ LOGIC =====
+let currentQuestion=0;
+let userAnswers=[];
+let paid=false;
+
+const quizContainer=document.getElementById('quizContainer');
+
+function renderQuestion(index){
+    // First 10 checkpoint
+    if(index===10 && !paid){
+        let score=0;
+        for(let i=0;i<10;i++){
+            if(userAnswers[i]===questions[i].answer) score++;
+        }
+        quizContainer.innerHTML = `<h2>SCORE AFTER FIRST 10 QUESTIONS: ${score}/10</h2>
+        <p>TO ACCESS REMAINING QUESTIONS, PAY ₦800 BELOW</p>`;
+        const payBtn=document.createElement("button");
+        payBtn.textContent="PAY ₦800";
+        payBtn.onclick=()=>{
+            let handler = PaystackPop.setup({
+                key: 'pk_live_c3afe0dd574bcdedecda6763d79ce6156ff9baa5',
+                email: currentUser.username+"@example.com",
+                amount: 80000,
+                currency: "NGN",
+                callback: function(response){
+                    alert("PAYMENT SUCCESSFUL! Ref: "+response.reference);
+                    paid=true;
+                    renderQuestion(index);
+                },
+                onClose: function(){alert("Payment not completed");}
+            });
+            handler.openIframe();
+        };
+        quizContainer.appendChild(payBtn);
+        return;
+    }
+
+    // Render question
+    quizContainer.innerHTML="";
+    const q=questions[index];
+    const qDiv=document.createElement("div");
+    qDiv.innerHTML=`<strong>Q${index+1}: ${q.q}</strong><br><br>`;
+    q.options.forEach((opt,i)=>{
+        const btn=document.createElement("button");
+        btn.textContent=opt;
+        btn.onclick=()=>{
+            userAnswers[index]=i;
+            if(index<10){
+                currentQuestion++;
+                renderQuestion(currentQuestion);
+            } else {
+                currentQuestion++;
+                renderQuestion(currentQuestion);
+            }
+        };
+        qDiv.appendChild(btn);
+    });
+
+    const navDiv=document.createElement("div");
+    if(index>0){
+        const prevBtn=document.createElement("button");
+        prevBtn.textContent="Previous";
+        prevBtn.onclick=()=>{currentQuestion--; renderQuestion(currentQuestion);};
+        navDiv.appendChild(prevBtn);
+    }
+    if(index<questions.length-1){
+        const nextBtn=document.createElement("button");
+        nextBtn.textContent="Next";
+        nextBtn.onclick=()=>{currentQuestion++; renderQuestion(currentQuestion);};
+        navDiv.appendChild(nextBtn);
+    } else {
+        const finishBtn=document.createElement("button");
+        finishBtn.textContent="Finish";
+        finishBtn.onclick=finishQuiz;
+        navDiv.appendChild(finishBtn);
+    }
+
+    quizContainer.appendChild(qDiv);
+    quizContainer.appendChild(navDiv);
+}
+
+// ===== FINISH QUIZ =====
+function finishQuiz(){
+    let score=0;
+    questions.forEach((q,i)=>{
+        if(userAnswers[i]===q.answer) score++;
+    });
+    quizContainer.innerHTML=`<h2>YOUR FINAL SCORE: ${score} / ${questions.length}</h2>`;
+}
+</script>
+</body>
+</html>
